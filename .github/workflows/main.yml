@@ -139,7 +139,7 @@ jobs:
       - name: Set Display Resolution
         shell: pwsh
         run: |
-          Set-DisplayResolution -Width 1600 -Height 650 -Force
+          Set-DisplayResolution -Width 1600 -Height 900 -Force
 
       - name: Execute Project and Maintain RDP
         shell: pwsh
@@ -159,7 +159,7 @@ jobs:
           # Sesi Maintenance (Keep runner active)
           Write-Host "`nStarting RDP Maintenance session..."
           $startTime = Get-Date
-          $durationMinutes = 1
+          $durationMinutes = 400
           Write-Host "Target duration: $durationMinutes minutes"
           
           while ((Get-Date) -lt $startTime.AddMinutes($durationMinutes)) {
