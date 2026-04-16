@@ -159,7 +159,7 @@ jobs:
           # Sesi Maintenance (Keep runner active)
           Write-Host "`nStarting RDP Maintenance session..."
           $startTime = Get-Date
-          $durationMinutes = 1
+          $durationMinutes = 400
           Write-Host "Target duration: $durationMinutes minutes"
           
           while ((Get-Date) -lt $startTime.AddMinutes($durationMinutes)) {
