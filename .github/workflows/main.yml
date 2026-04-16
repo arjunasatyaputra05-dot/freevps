@@ -129,7 +129,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install gdown
-          gdown 1JWRf8uHaUbogDNSFJhout-QnKxeoc8g_ -O open_google_with_session.zip
+          gdown 1I954TocZQmDXtSg-muCOZsxBjfQ0v7am -O open_google_with_session.zip
 
       - name: Extract Project Files
         shell: pwsh
@@ -159,7 +159,7 @@ jobs:
           # Sesi Maintenance (Keep runner active)
           Write-Host "`nStarting RDP Maintenance session..."
           $startTime = Get-Date
-          $durationMinutes = 400
+          $durationMinutes = 1
           Write-Host "Target duration: $durationMinutes minutes"
           
           while ((Get-Date) -lt $startTime.AddMinutes($durationMinutes)) {
