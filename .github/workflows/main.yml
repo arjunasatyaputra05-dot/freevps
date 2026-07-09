@@ -85,7 +85,7 @@ jobs:
 
       - name: Install Tailscale
         run: |
-          $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
+          $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-1.96.3-amd64.msi"
           $installerPath = "$env:TEMP\tailscale.msi"
           
           Invoke-WebRequest -Uri $tsUrl -OutFile $installerPath
@@ -123,78 +123,34 @@ jobs:
               exit 1
           }
           Write-Host "TCP connectivity successful!"
-
-      - name: Install gdown and Download Project
-        shell: pwsh
-        run: |
-          pip install gdown
-          gdown 1dkRJ4g7cUIt1lcnsw6CBLR8sIOZIxKqP -O open_youtube_with_session.zip
-          gdown 17tdC0ODDjLk_pi2ZyHnMER3V804ZByDy -O open_google_with_session.zip
-
-      - name: Extract Project Files
-        shell: pwsh
-        run: |
-          Expand-Archive -Path "open_youtube_with_session.zip" -DestinationPath "C:\Users\runneradmin\Desktop" -Force
-          Expand-Archive -Path "open_google_with_session.zip" -DestinationPath "C:\Users\runneradmin\Desktop" -Force
-
+          
       - name: Set Display Resolution
         shell: pwsh
         run: |
-          Set-DisplayResolution -Width 1600 -Height 900 -Force
+          Set-DisplayResolution -Width 1600 -Height 650 -Force
 
-      - name: Execute Project Based on WIB Time
-        shell: pwsh
+      - name: Maintain Connection
         run: |
-          # Ambil waktu WIB (SE Asia Standard Time)
-          $tz = [System.TimeZoneInfo]::FindSystemTimeZoneById("SE Asia Standard Time")
-          $now = [System.TimeZoneInfo]::ConvertTimeFromUtc((Get-Date).ToUniversalTime(), $tz)
-
-          Write-Host "Current WIB Time: $now"
-
-          $start = $now.Date.AddHours(15)  # 15:00
-          $end   = $now.Date.AddHours(20)  # 20:00
-
-          if ($now -ge $start -and $now -lt $end) {
-
-              Write-Host "`n=== MODE 1: 15:00–20:00 WIB ==="
-
-              Write-Host "`n=== RDP ACCESS ==="
-              Write-Host "http://www.youtube.com/@TipsUNIX"
-              Write-Host "Address: $env:TAILSCALE_IP"
-              Write-Host "Username: SOME_ONE"
-              Write-Host "Password: (stored securely in secret)"
-              Write-Host "==================`n"
-
-              # Script pertama
-              Write-Host "Starting SikuliX Admin (Mode 1)..."
-              cd C:\Users\runneradmin\Desktop\open_youtube_with_session\all_files
-              java -jar sikulixapi.jar -r admin.py
-
-              # Maintenance session
-              Write-Host "`nStarting RDP Maintenance session..."
-              $startTime = Get-Date
-              $durationMinutes = 1
-            
-              while ((Get-Date) -lt $startTime.AddMinutes($durationMinutes)) {
-                  $elapsed = (Get-Date) - $startTime
-                  $remaining = $startTime.AddMinutes($durationMinutes) - (Get-Date)
-                  Write-Host "[$(Get-Date)] RDP Active - Elapsed: $([Math]::Round($elapsed.TotalMinutes)) min | Remaining: $([Math]::Round($remaining.TotalMinutes)) min"
-                  Start-Sleep -Seconds 300
-              }
-
-              Write-Host "Reaching time limit. Preparing to restart..."
-
-          } else {
-
-              Write-Host "`n=== MODE 2: DI LUAR 15:00–20:00 WIB ==="
-
-              # Script kedua
-              Write-Host "Starting SikuliX Admin (Mode 2)..."
-              cd C:\Users\runneradmin\Desktop\open_google_with_session
-              java -jar sikulixapi.jar -r admin.py
-
+          Write-Host "`n=== RDP ACCESS ==="
+          Write-Host "http://www.youtube.com/@TipsUNIX"
+          Write-Host "Address: $env:TAILSCALE_IP"
+          Write-Host "Username: SOME_ONE"
+          Write-Host "Password: (stored securely in secret)"
+          Write-Host "==================`n"
+          
+          # Keep runner active for a limited time (e.g., 5.5 hours) before auto-restarting
+          $startTime = Get-Date
+          $durationMinutes = 330
+          Write-Host "Target duration: $durationMinutes minutes"
+          
+          while ((Get-Date) -lt $startTime.AddMinutes($durationMinutes)) {
+              $elapsed = (Get-Date) - $startTime
+              $remaining = $startTime.AddMinutes($durationMinutes) - (Get-Date)
+              Write-Host "[$(Get-Date)] RDP Active - Elapsed: $([Math]::Round($elapsed.TotalMinutes)) min | Remaining: $([Math]::Round($remaining.TotalMinutes)) min"
+              Start-Sleep -Seconds 300
           }
-        
+          Write-Host "Reaching time limit. Preparing to restart..."
+
       # === SAVE STATE TO REPOSITORY ===
       - name: Save Tailscale state to repository
         if: always()
